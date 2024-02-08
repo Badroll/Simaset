@@ -121,10 +121,19 @@ class ApiController extends mCtl
         // $uploadFile = "image-" . substr(md5(date("YmdHis"). $file),0,10) . "." . $fileExt;
         // $file->move("storage/", $uploadFile);
 
-        $svg = QrCode::size($this->qr_size )->generate($kode);
+        $svg = QrCode::size($this->qr_size)->generate($kode);
+        $svg = str_replace("\n", " ", $svg);
+        $qr_svg = "";
+        for ($j = 0; $j < strlen($svg); $j++) {
+            $char = $svg[$j];
+            if ($char == '"') {
+                $char = '\\"';
+            }
+            $qr_svg .= $char;
+        }
         $save = DB::table("barang")->insertGetid([
             "BARANG_KODE_SENSUS" => $kode,
-            "BARANG_QR_SVG" => str_replace("\n", " ", $svg),
+            "BARANG_QR_SVG" => "-",
             "BARANG_NAMA" => $nama,
             "BARANG_OPD" => $opd,
             "BARANG_KONDISI" => $kondisi,
@@ -203,9 +212,19 @@ class ApiController extends mCtl
         }
 
         $svg = QrCode::size($this->qr_size )->generate($kode);
+        $svg = str_replace("\n", " ", $svg);
+        $qr_svg = "";
+        for ($j = 0; $j < strlen($svg); $j++) {
+            $char = $svg[$j];
+            if ($char == '"') {
+                $char = '\\"';
+            }
+            $qr_svg .= $char;
+        }
+
         $save = DB::table("barang")->where("BARANG_ID", $id)->update([
             "BARANG_KODE_SENSUS" => $kode,
-            "BARANG_QR_SVG" => str_replace("\n", " ", $svg),
+            "BARANG_QR_SVG" => "=-",
             "BARANG_NAMA" => $nama,
             "BARANG_OPD" => $opd,
             "BARANG_KONDISI" => $kondisi,
@@ -235,14 +254,14 @@ class ApiController extends mCtl
 
     
     public function generateQrCode(Request $req){
-        $url = 'KS.1';
-        $svg = QrCode::size($this->qr_size)->generate($url);
-        $data["url"] = $url;
-        $data["svg"] = $svg;
+        // $url = 'KS.1';
+        // $svg = QrCode::size($this->qr_size)->generate($url);
+        // $data["url"] = $url;
+        // $data["svg"] = $svg;
 
         #return view('template.qr', $data);
         #return QrCode::size($this->qr_size)->generate($url);
-        return response(QrCode::size($this->qr_size)->generate($url))->header('Content-type','text/plain');
+        return response(QrCode::size($this->qr_size)->generate($req->qr_content))->header('Content-type','text/plain');
     }
 
 
