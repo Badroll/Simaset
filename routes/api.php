@@ -23,6 +23,7 @@ Route::group(['middleware' => ['cors']], function(){
     Route::post("barang-get",		"Api\ApiController@barangGet");
     Route::post("barang-insert",		"Api\ApiController@barangInsert");
     Route::post("barang-update",		"Api\ApiController@barangUpdate");
+	Route::post("barang-delete",		"Api\ApiController@barangDelete");
     Route::post("kritik-insert",		"Api\ApiController@kritikInsert");
 
     Route::get('files/{filename}', function ($filename){

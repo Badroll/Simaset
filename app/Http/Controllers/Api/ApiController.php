@@ -25,9 +25,9 @@ class ApiController extends mCtl
             }
         }
         $user = DB::select("
-            SELECT * FROM user WHERE USER_TOKEN = ?
+            SELECT * FROM _user WHERE USER_TOKEN = ?
         ", [$loginToken]);
-        if (len($user) == 0){
+        if (count($user) == 0){
             return Helper::composeReply2("ERROR", "user not found");
         }
         $this->user = $user[0];
@@ -238,9 +238,25 @@ class ApiController extends mCtl
     }
 
 
+    public function barangDelete(Request $request){
+        $id = $request->id;
+        
+        $cek = DB::select("
+            SELECT * FROM barang WHERE BARANG_ID = ?
+        ", [$id]);
+        if(count($cek) == 0){
+            return Helper::composeReply2("ERROR", "Barang tidak ditemukan");
+        }
+        $barang = $cek[0];
+        $delete = DB::table("barang")->where("BARANG_ID", $id)->delete();
+        
+        return Helper::composeReply2("SUCCESS", "Barang dihapus");
+    }
+
+
     public function kritikInsert(Request $req)
     {
-        $user = $req->user;
+        $user = $this->user->{"USER_ID"};
         $isi = $req->isi;
 
         $save = DB::table("kritik")->insertGetId([
